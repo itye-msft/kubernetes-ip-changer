@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ip-changer
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ip-changer
+    spec:
+      containers:
+      - name: ip-changer
+        image: ityer/k8s-ip-changer:v1
+        ports:
+        - containerPort: 4000
+        env:
+        - name: LoadBalancerNamespace
+          value: "ingress"
+        - name: PortMin
+          value: "20000"
+        - name: PortMax
+          value: "30000"
+        - name: IngressLabel
+          value: "ingress"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip-changer
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4000
+    protocol: TCP
+  selector:
+    app: ip-changer           

@@ -1,0 +1,16 @@
+{
+  "name": "ip-changer",
+  "version": "1.0.0",
+  "description": "Kubernetes public IP changer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Itye Richter",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "kubernetes-client": "^5.2.0"
+  }
+}
