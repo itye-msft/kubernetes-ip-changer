@@ -12,18 +12,9 @@ spec:
     spec:
       containers:
       - name: ip-changer
-        image: ityer/k8s-ip-changer:v1
+        image: ityer/k8s-ip-changer:v2
         ports:
         - containerPort: 4000
-        env:
-        - name: LoadBalancerNamespace
-          value: "ingress"
-        - name: PortMin
-          value: "20000"
-        - name: PortMax
-          value: "30000"
-        - name: IngressLabel
-          value: "ingress"
 ---
 apiVersion: v1
 kind: Service
@@ -36,4 +27,26 @@ spec:
   - port: 4000
     protocol: TCP
   selector:
-    app: ip-changer           
+    app: ip-changer
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: recyclerjob
+spec:
+  schedule: "*/20 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: recyclerjob
+            image: appropriate/curl
+            args:
+            - /bin/sh
+            - -ec
+            - curl ip-changer.default.svc.cluster.local:4000/recycle
+          restartPolicy: Never               
